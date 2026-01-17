@@ -5,7 +5,7 @@
 #include <sstream>
 #include "marketdata.h"
 
-std::vector<candle>period;
+std::vector<candle> period;
 
 candle  getData(const std::string& filename)
 {

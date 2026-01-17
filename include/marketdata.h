@@ -1,5 +1,4 @@
-#ifndef MARKETDATA_H
-#define MARKETDATA_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -13,6 +12,7 @@ struct candle
 	double close;
 };
 
+extern std::vector <candle> period;
+
 candle getData(const std::string& filename);
 
-#endif //MARKETDATA_H

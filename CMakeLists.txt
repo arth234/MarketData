@@ -1,12 +1,21 @@
 cmake_minimum_required(VERSION 3.10)
-project(MarketData VERSION 1.0 LANGUAGES CXX)
+project(MarketData)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_executable(MarketData 
-src/main.cpp
-src/MarketData.cpp)
+find_package(CURL REQUIRED)
+
+add_executable(MarketData
+  src/main.cpp
+  src/INDEX.cpp  
+  src/MarketData.cpp
+  src/ConstConcepts.cpp
+)
 
 target_include_directories(MarketData PRIVATE
-include lib)
+  include
+)
+
+target_link_libraries(MarketData PRIVATE
+  CURL::libcurl
+)

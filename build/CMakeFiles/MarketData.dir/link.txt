@@ -1,1 +1,0 @@
-/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/MarketData.dir/link.d CMakeFiles/MarketData.dir/src/main.cpp.o CMakeFiles/MarketData.dir/src/MarketData.cpp.o -o MarketData
