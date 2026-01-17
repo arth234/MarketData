@@ -2,38 +2,35 @@
 #include <cmath>
 #include "marketdata.h"
 #include "INDEX.h"
+#include "ConstConcepts.h"
 
-class Concepts
+double Concepts::Body(size_t i)
 {
-  public:
-    double Body(size_t i)
-    {
-        return std::abs(
-            period[getIn(i)].close -
-            period[getIn(i)].open
-        );
-    }
+  return std::abs(
+  period[getIn(i)].close -
+  period[getIn(i)].open);
+}
 
-    double LowerShadow(size_t i)
-    {
-        double net =
-            period[getIn(i)].close -
-            period[getIn(i)].open;
+double Concepts::LowerShadow(size_t i)
+{
+  double net =
+  period[getIn(i)].close -
+  period[getIn(i)].open;
 
-        return net < 0
-            ? std::abs(period[getIn(i)].close - period[getIn(i)].low)
-            : std::abs(period[getIn(i)].open  - period[getIn(i)].low);
-    }
+  return net < 0
+  ? std::abs(period[getIn(i)].close - period[getIn(i)].low)
+  : std::abs(period[getIn(i)].open  - period[getIn(i)].low);
+ }
 
-    double UpperShadow(size_t i)
-    {
-        double net =
-            period[getIn(i)].close -
-            period[getIn(i)].open;
+  
+double Concepts::UpperShadow(size_t i)
+{
+  double net =
+  period[getIn(i)].close -
+  period[getIn(i)].open;
 
-        return net < 0
-            ? std::abs(period[getIn(i)].open  - period[getIn(i)].high)
-            : std::abs(period[getIn(i)].close - period[getIn(i)].high);
-    }
+  return net < 0
+  ? std::abs(period[getIn(i)].open  - period[getIn(i)].high)
+  : std::abs(period[getIn(i)].close - period[getIn(i)].high);
+}
 
-};
