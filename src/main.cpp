@@ -27,7 +27,7 @@ int main()
       return 1;
     }
     curl_easy_setopt(web, CURLOPT_URL,
-    "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT");
+    "https://api.binance.com/api/v3/ticker/price?symbol=USDTUSD");
 
     curl_easy_setopt(web, CURLOPT_WRITEFUNCTION, WriteCallBack);
     curl_easy_setopt(web, CURLOPT_WRITEDATA, &response);
