@@ -1,6 +1,9 @@
 #include <curl/curl.h>
 #include <vector>
 #include <iostream>
+#include <chrono>
+#include <thread>
+#include <string>
 #include "OHLC_Push.h"
 #include "marketdata.h"
 
@@ -22,14 +25,14 @@ size_t size, size_t nmemb, void* userp)
 
 struct timeframe
 {
-  char time[1];
+  string time;
   size_t periods;
 };
 
 timeframe x;
 
-candle OHLC_push(const string& symbol, x.time[1], 
-periods)
+candle OHLC_push(const string& symbol, x.time, 
+x.periods)
 {
   candle c;
 
@@ -65,9 +68,13 @@ periods)
     /*Data Pushing class action where that specific
     function will return the ohlc data from the
     real time market data from the binance encapsulating it*/
-   }
 
-   curl_easy_cleanup(data);
+    this_thread::sleep_for(chrono::time(periods));
+    period.push_back(c.open = response)
+    
+  }
+
+  curl_easy_cleanup(data);
   
-    return {};
+  return {};
 }
