@@ -14,6 +14,7 @@ add_executable(MarketData
 
 target_include_directories(MarketData PRIVATE
   include
+  json/include
 )
 
 target_link_libraries(MarketData PRIVATE
