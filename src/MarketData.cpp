@@ -26,7 +26,7 @@ candle  getData(const std::string& filename)
     std::stringstream ss(line);
     char delimiter = ',';
 
-    if(std::getline(ss, c.timestamp, delimiter));
+    std::getline(ss, c.timestamp, delimiter);
     if(std::getline(ss, value, delimiter))
     c.open = std::stod(value);
 

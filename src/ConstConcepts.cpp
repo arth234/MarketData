@@ -34,3 +34,15 @@ double Concepts::UpperShadow(size_t i)
   : std::abs(period[getIn(i)].close - period[getIn(i)].high);
 }
 
+double Concepts::Net(size_t i)
+{
+  for(size_t c = 0; c < i; c++)
+  {
+    double NetSum =
+    period[getIn(c)].close - 
+    period[getIn(c)].open;
+    return NetSum ++;
+  }
+  
+  return {};
+}
