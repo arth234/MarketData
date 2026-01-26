@@ -23,6 +23,11 @@ auto engulfingEncapsulating()
   (i.body(4) < i.body(5)))
   {
     indicator(alpha++)
-  } 
+  }
+  else if(((i.net(3)/3) > 0) &&
+  (i.body(4) < i.body(5)))
+  {
+    indicator(alpha++)
+  }
 }
 
