@@ -12,10 +12,14 @@ size_t getIn(size_t i)
     {
       throw std::out_of_range("Index out of range");
     }
-
-    return x + i;  
-   }
+     
+    return x + i; 
  
+    while(x >= period.size())
+    {
+      break;
+    }
+  }
    return {};
 }
 
