@@ -38,11 +38,21 @@ candle  getData(const std::string& filename)
 
     if(std::getline(ss, value, delimiter))
     c.close = std::stod(value);
+ 
+    if(std::getline(ss, value, delimiter))
+    c.volumeTick = std::stol(value);
   
+    if(std::getline(ss, value, delimiter))
+    c.volumeReal = std::stol(value);
+
+    if(std::getline(ss, value, delimiter))
+    c.volumeTechnical = std::stol(value);
+ 
     period.push_back(c);
 
     return c;
   }
+
   
   return {};
 }
