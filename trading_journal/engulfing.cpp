@@ -2,6 +2,7 @@
 #include "ConstConcepts.h"
 #include "marketdata.h"
 #include "INDEX.h"
+#include "engulfing.h"
 
 using namespace std;
 
