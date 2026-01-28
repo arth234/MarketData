@@ -1,8 +1,7 @@
 #include <vector>
-#include <sqlite3.h>
-#include "constconcepts.h"
+#include "ConstConcepts.h"
 #include "marketdata.h"
-#include "index.h"
+#include "INDEX.h"
 
 using namespace std;
 
@@ -13,21 +12,23 @@ engulfing indicator(engulfing a)
   return a;
 }
 
-auto engulfingEncapsulating()
+size_t engulfingEncapsulating()
 {
-  ConstConcepts i;
+  Concepts i;
  
-  size_t alpha;
+  size_t alpha = 0;
 
-  if(((i.net(3)/3) < 0) &&
-  (i.body(4) < i.body(5)))
+  if(((i.Net(3)/3) < 0) &&
+  (i.Body(4) < i.Body(5)))
   {
-    indicator(alpha++)
+    return indicator(alpha++);
   }
-  else if(((i.net(3)/3) > 0) &&
-  (i.body(4) < i.body(5)))
+  else if(((i.Net(3)/3) > 0) &&
+  (i.Body(4) < i.Body(5)))
   {
-    indicator(alpha++)
+    return indicator(alpha++);
   }
+  
+  return {} ;
 }
 
