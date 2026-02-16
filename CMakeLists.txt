@@ -10,15 +10,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# Lib CURL
-find_package(CURL REQUIRED)
+find_package(SQLite3 REQUIRED)
 
 add_executable(MarketData
     src/main.cpp
+    src/OpenDB.cpp
     src/INDEX.cpp
-    src/MarketData.cpp
     src/ConstConcepts.cpp
-    trading_journal/engulfing.cpp
+    src/engulfing.cpp
 )
 
 target_include_directories(MarketData
@@ -27,10 +26,7 @@ target_include_directories(MarketData
         ${CMAKE_CURRENT_SOURCE_DIR}/json/include
 )
 
-target_link_libraries(MarketData
-    PRIVATE
-        CURL::libcurl
-)
+target_link_libraries(MarketData PRIVATE SQLite::SQLite3)
 
 # Opcional: warnings decentes
 if (MSVC)
@@ -38,3 +34,4 @@ if (MSVC)
 else()
     target_compile_options(MarketData PRIVATE -Wall -Wextra -Wpedantic)
 endif()
+

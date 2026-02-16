@@ -1,6 +1,8 @@
-#ifndef INDEX_H
-#define INDEX_H
+#pragma once
+
+#include "OpenDB.h"
+#include "cstddef"
 
 size_t getIn(size_t i);
 
-#endif //INDEX_H
+

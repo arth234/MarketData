@@ -1,48 +1,33 @@
-#include <vector>
-#include <cmath>
-#include "marketdata.h"
-#include "INDEX.h"
 #include "ConstConcepts.h"
+#include "OpenDB.h"
+#include "INDEX.h"
 
-double Concepts::Body(size_t i)
-{
-  return std::abs(
-  period[getIn(i)].close -
-  period[getIn(i)].open);
+// Construtor
+Concepts::Concepts(std::vector<Candle>& c) : period(c) {}
+
+// Implementação das funções
+double Concepts::Body(size_t i) const {
+  if (i >= period.size()) return 0;
+    return std::abs(period[getIn(i)].close -
+    period[getIn(i)].open);
 }
 
-double Concepts::LowerShadow(size_t i)
-{
-  double net =
-  period[getIn(i)].close -
-  period[getIn(i)].open;
-
-  return net < 0
-  ? std::abs(period[getIn(i)].close - period[getIn(i)].low)
-  : std::abs(period[getIn(i)].open  - period[getIn(i)].low);
- }
-
-  
-double Concepts::UpperShadow(size_t i)
-{
-  double net =
-  period[getIn(i)].close -
-  period[getIn(i)].open;
-
-  return net < 0
-  ? std::abs(period[getIn(i)].open  - period[getIn(i)].high)
-  : std::abs(period[getIn(i)].close - period[getIn(i)].high);
+double Concepts::Net(size_t i) const {
+  if (i >= period.size()) return 0;
+    return period[getIn(i)].close -
+    period[getIn(i)].open;
 }
 
-double Concepts::Net(size_t i)
-{
-  for(size_t c = 0; c < i; c++)
-  {
-    double NetSum =
-    period[getIn(c)].close - 
-    period[getIn(c)].open;
-    return NetSum ++;
-  }
-  
-  return {};
+double Concepts::UpperShadow(size_t i) const {
+  if (i >= period.size()) return 0;
+    return period[getIn(i)].high -
+    std::max(period[getIn(i)].open,
+    period[getIn(i)].close);
+}
+
+double Concepts::LowerShadow(size_t i) const {
+  if (i >= period.size()) return 0;
+    return std::min(period[getIn(i)].open,
+    period[getIn(i)].close) -
+    period[getIn(i)].low;
 }
