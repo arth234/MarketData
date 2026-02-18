@@ -1,33 +1,61 @@
+
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include "ConstConcepts.h"
 #include "OpenDB.h"
 #include "INDEX.h"
 #include "engulfing.h"
+#include "return.h"
+#include "ConstConcepts.h"
 
 using namespace std;
 
 int main()
 {
-  bool engulfing;
-  size_t pttern;
+  Concepts i;
+
+  bool engolfoAlta;
+  bool engolfoBaixa;  
+
+  double capital;
+  double networth;
+  double balance;
+  double retorno;
+
+  capital = 10000.000000000;
   while(true)
   {
-    engulfing = Engulfing();
+    loadCandles();
+    engolfoAlta = RisingEngulfing(3);
 
-    if(engulfing)
+    engolfoBaixa = DownEngulfing(3);
+
+    if(engolfoAlta)
     {
-      pttern ++;
+      retorno = Return(3);
+      balance++;
     }
-    Concepts c(period);
 
-    cout << "engolfo =" << pttern << endl;
-    cout << "body =" << c.Body(1) << endl;
+    if(engolfoBaixa)
+    {
+      retorno = Return(3);
+      
+      if(retorno < 0)
+      {
+        retorno = abs(Return(3));
+        balance++; 
+      }
 
-    cout << period[getIn(1)].close << endl; 
+      if(retorno > 0)
+      {
+        retorno = -(Return(3));
+      }
+    }
+    networth = capital + (100000* (retorno));
+
+    cout << "engolfo " << "saldo:"
+    << networth << endl; 
   }
 
   return 0;
 }
-

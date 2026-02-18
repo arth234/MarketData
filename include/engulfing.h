@@ -1,9 +1,8 @@
 #pragma once
 
 #include <vector>
-#include "ConstConcepts.h"
-#include "OpenDB.h"
-#include "INDEX.h"
+#include <cstddef>
 
-bool Engulfing();
+bool RisingEngulfing(size_t push);
 
+bool DownEngulfing(size_t push);

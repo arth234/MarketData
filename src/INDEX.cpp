@@ -5,10 +5,10 @@
 #include "OpenDB.h"
 #include "INDEX.h"
 
-std::vector<Candle> period;
-
 size_t getIn(size_t i)
 {       
+  loadCandles();
+
   return period.size() - i;
 }
 

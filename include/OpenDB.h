@@ -1,22 +1,19 @@
-#pragma once 
-
+#pragma once
 #include <vector>
 
-struct Candle {
-    int time;               // timestamp
+struct Candle
+{
+    int time;
     double open;
     double high;
     double low;
     double close;
-    int tick_volume;
-    int real_volume;
+    long tick_volume;
+    long real_volume;
     double technical_volume;
 };
 
 extern std::vector<Candle> period;
 
-std::vector<Candle> loadCandles();
-
-inline void printCandle(const Candle& c);
-
+void loadCandles();
 

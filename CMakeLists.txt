@@ -18,6 +18,7 @@ add_executable(MarketData
     src/INDEX.cpp
     src/ConstConcepts.cpp
     src/engulfing.cpp
+    src/return.cpp
 )
 
 target_include_directories(MarketData
