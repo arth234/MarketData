@@ -1,8 +1,9 @@
-#include "INDEX.h"
+#include "Index.h"
 #include "CandleServer.h"
 #include "ConstConcepts.h"
 #include <cmath>
 #include <mutex>
+#include <numeric>
 
 Concepts::Concepts(){}
 
@@ -38,26 +39,39 @@ double Concepts::LowerShadow(size_t i)
     period[getIn(i)].close) -
     period[getIn(i)].low;
 }
+
 double Concepts::Volatility(size_t i)
 {
   std::lock_guard<std::mutex> lock(mtx);
-  double retorno;
-  double retornoMedia;
-  double retornoEx;
-  double deviation;
-  double square;
-  if(i >= period.size()) return 0;
-  for(size_t x = 0; x < i; x++)
+  size_t N = period.size();
+  if(N < 2) return 0.0;
+
+  double sum = 0.0;
+  for(size_t count = 0; count < i; count++)
   {
-    retorno += std::abs(Net(x));
+    sum += Body(i);
   }
-  retornoMedia = retorno / i;  
-  for(size_t x = 0; x < i; x++)
+  double mean = sum / i;
+  double sq_sum = 0.0;
+
+  for(size_t square = 0; square < i; ++square)
   {
-    retornoEx = std::abs(Net(x));
-    deviation = retornoEx - retornoMedia;    
-    square += std::pow(deviation, 2);    
+    double b = Body(square);
+    sq_sum += (b - mean) * (b - mean);
   }
-  return std::sqrt(square / i);
+
+  return std::sqrt(sq_sum / (i));
 }
 
+double Concepts::Return(size_t i)
+{
+  std::lock_guard<std::mutex> lock(mtx);
+  double data;
+
+  for(size_t x = period.size() - i; x < period.size(); x++)
+  {
+    data += Net(x);
+  }
+
+  return data / i;
+}

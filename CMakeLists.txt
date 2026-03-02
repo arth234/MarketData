@@ -15,9 +15,8 @@ find_package(Crow REQUIRED)
 
 add_executable(MarketData
     src/main.cpp
-    src/INDEX.cpp
+    src/Index.cpp
     src/ConstConcepts.cpp
-    src/return.cpp
     src/CandleServer.cpp
 )
 
