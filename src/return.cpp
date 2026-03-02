@@ -1,4 +1,4 @@
-#include "OpenDB.h" 
+#include "CandleServer.h" 
 #include "INDEX.h"
 #include "ConstConcepts.h" 
 #include "return.h" 
@@ -7,8 +7,7 @@
 
 double Return(size_t pull)
 {
-  loadCandles();	
-
+  std::lock_guard<std::mutex> lock(mtx);
   Concepts i;
 
   for(size_t x = pull; x < period.size(); x++)

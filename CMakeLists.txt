@@ -5,34 +5,44 @@ project(MarketData
     LANGUAGES CXX
 )
 
-# C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-find_package(SQLite3 REQUIRED)
+find_package(Boost 1.71 REQUIRED COMPONENTS system)
+find_package(nlohmann_json REQUIRED)  # <--- adiciona isso
+find_package(Crow REQUIRED)
 
 add_executable(MarketData
     src/main.cpp
-    src/OpenDB.cpp
     src/INDEX.cpp
     src/ConstConcepts.cpp
-    src/engulfing.cpp
     src/return.cpp
+    src/CandleServer.cpp
 )
 
 target_include_directories(MarketData
     PRIVATE
         ${CMAKE_CURRENT_SOURCE_DIR}/include
-        ${CMAKE_CURRENT_SOURCE_DIR}/json/include
+        ${Boost_INCLUDE_DIRS}
 )
 
-target_link_libraries(MarketData PRIVATE SQLite::SQLite3)
+# Linka bibliotecas
+target_link_libraries(MarketData
+    PRIVATE
+        pthread
+        ${Boost_LIBRARIES}
+ 
+        nlohmann_json::nlohmann_json  # <--- linka o json
+)
+target_link_libraries(MarketData
+  PRIVATE
+  Crow::Crow
+)
 
-# Opcional: warnings decentes
+# Warnings
 if (MSVC)
     target_compile_options(MarketData PRIVATE /W4)
 else()
     target_compile_options(MarketData PRIVATE -Wall -Wextra -Wpedantic)
 endif()
-
