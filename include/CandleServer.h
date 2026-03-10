@@ -18,4 +18,4 @@ extern std::vector<Candle> period;
 extern std::mutex mtx;
 
 // Função para iniciar o servidor
-void candleServer(uint16_t Port);
+void candleServer(int port);

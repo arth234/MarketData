@@ -1,24 +1,27 @@
 #include <iostream>
-#include "CandleServer.h"
-#include "ConstConcepts.h"
-#include <chrono>
 #include <thread>
-
-using namespace std;
+#include <chrono>
+#include <string>
+#include "ConstConcepts.h"
+#include "CandleServer.h"
 
 int main()
 {
-  thread t(candleServer, 5000);
+  std::thread t(candleServer, 5000); 
+
   t.detach();
 
-  std::cout << "Main iniciou\n";
-
+  double volatilidade;
   Concepts i;
 
+  size_t shift;
+  std::cin >> shift;
+
   while(true)
-  {
-    double corpo = i.Body(0); 
-    std::cout << "body:" << corpo << std::endl;
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+  { 
+    volatilidade = i.Volatility(shift);
+    std::cout << "volatilidade:" << volatilidade
+    << std::endl; 
   }
+  return 0;
 }
