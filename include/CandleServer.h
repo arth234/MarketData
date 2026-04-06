@@ -7,10 +7,10 @@
 // Estrutura para armazenar os dados de um candle
 struct Candle {
     std::string symbol;
-    double open;
-    double high;
-    double low;
-    double close;
+    long double open;
+    long double high;
+    long double low;
+    long double close;
 };
 
 // Declarando variáveis globais para serem definidas em um .cpp

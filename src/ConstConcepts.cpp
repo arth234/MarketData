@@ -74,7 +74,7 @@ double Concepts::Return(size_t i)
 
   for(size_t x = period.size() - i; x < period.size(); x++)
   {
-    data += Net(x);
+    data += std::abs(Net(x));
   }
 
   return data / i;

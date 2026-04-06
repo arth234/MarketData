@@ -8,7 +8,6 @@
 
 size_t getIn(size_t i)
 {       
-  std::lock_guard<std::mutex> lock(mtx);
-  return period.size() - i;
+  return period.size() - 1 - i;
 }
 
