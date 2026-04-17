@@ -1,86 +1,59 @@
 #include <iostream>
 #include <thread>
+#include <mutex>
 #include <chrono>
 #include <string>
+#include <atomic>
 #include "ConstConcepts.h"
 #include "CandleServer.h"
-#include "duckdb.hpp"
 
-using namespace duckdb;
-using Lock = std::lock_guard<std::mutex>;
+std::mutex mart;
+
 int main(int argc, char *argv[])
 {
+  std::atomic<size_t> indice{0};
   int port = std::stol(argv[1]);
   
-  std::thread t(candleServer, port); 
+  std::thread t(candleServer, port, &indice); 
   t.detach();
-
-  std::string path;
-
-  std::cout << "Where can i write the data:";
-  std::cin >> path;  
-
-  DuckDB dataFinance(path);
-  Connection connect(dataFinance);
-
-  connect.Query("CREATE TABLE a "
-  "(id INTEGER PRIMARY KEY, value" 
-  " DOUBLE PRECISION);"); 
-
-  connect.Query("ALTER TABLE a ADD"
-  "COLUMN volatility DOUBLE PRECISION;");
-  connect.Query("ALTER TABLE a ADD"
-  "COLUMN net DOUBLE PRECISION;");
-  connect.Query("ALTER TABLE a ADD"
-  "COLUMN netProfit DOUBLE PRECISION;");
 
   Concepts i;
 
   size_t a;
   size_t shift;
-
   std::cin >> shift;
   while(true)
-  {    
-    auto prepareData = 
-    connect.Prepare("INSERT INTO a (volatility, net, netProfit)"
-    "VALUES (?,?,?)");
+  {
+    size_t total = indice.load(std::memory_order_acquire); 
+    if(total < shift)
     {
-      Lock lock(mtx);
-      prepareData->Execute(period.size(), i.Volatility(shift),
-      i.Net(period.size()), i.Return(1));
+      std::this_thread::sleep_for(
+      std::chrono::milliseconds(10));
+      continue;
     }
-
-    {      
-      Lock lock(mtx);
-      if(period.size() >= 100)
-      {
-        period.clear();
-      }
-    }
-  
-    auto volatilidade = connect.Query("SELECT volatility FROM a;");
-    auto liquido = connect.Query("SELECT net FROM a;");
-    auto lucrLiqdo = connect.Query("SELECT netProfit FROM a;");
-
+ 
     {
-      Lock lock(mtx);
-      for(size_t x = 0; x < period.size(); x++)
+      std::lock_guard<std::mutex> lock(mart);
+      for(size_t x = 0; x < total; x++)
       {
-        double vol = 
-        volatilidade->GetValue(0, x).GetValue<double>();
-        double liquid =
-        liquido->GetValue(0, x).GetValue<double>();
-        double lucroLiqdo = 
-        lucrLiqdo->GetValue(0, x).GetValue<double>();
+        double vol = i.Volatility(shift);
+        double liquid = i.Net(total);
+        double lucroLiqdo = i.Return(1);
+
+        std::cout << vol << "|" << liquid << 
+        "|" << lucroLiqdo << "|" << 
+        total << "|" << period[total].close  << std::endl;
 
         if(vol == vol  && liquid < 0)
         {
           std::cout << " retorno de " << lucroLiqdo << 
-          std::endl;
+          "|" << total << std::endl;
         }
       }
     }
+    
+    std::this_thread::sleep_for(
+    std::chrono::milliseconds(6));
   } 
 
   return 0;

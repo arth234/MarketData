@@ -4,44 +4,71 @@
 #include <cmath>
 #include <mutex>
 #include <numeric>
+#include <atomic>
+
 Concepts::Concepts(){}
-double Concepts::Body(size_t i)
+
+long double Concepts::Body(size_t i)
 {
+  std::atomic<size_t> j{0};
+  size_t atual = j.load(std::memory_order_acquire);
+  if(i >= atual)
+    return 0.0;
+
   std::lock_guard<std::mutex> lock(mtx);
-  if(period.empty() || i >= period.size())
-    return 0;
-  Candle& c = period[period.size() - 1 - i];
+  Candle& c = period[(atual - 1 - i) % 1024];
   return std::abs(c.close - c.open);
 }
-double Concepts::Net(size_t i)
+long double Concepts::Net(size_t i)
 {
+  std::atomic<size_t> j{0};
+  size_t atual = j.load(std::memory_order_acquire);
+  if(i >= atual)
+    return 0.0;
+
   std::lock_guard<std::mutex> lock(mtx);
-  if (i >= period.size()) return 0;
-    return period[getIn(i)].close -
-    period[getIn(i)].open;
+  Candle& c = period[(atual - 1 - i) % 1024];    
+  return c.close - c.open;
 }
-double Concepts::UpperShadow(size_t i) 
+
+long double Concepts::UpperShadow(size_t i) 
 {
+  std::atomic<size_t> j{0};
+  size_t atual = 
+  j.load(std::memory_order_acquire);
+  if(i >= atual)
+    return 0.0;
+
   std::lock_guard<std::mutex> lock(mtx);
-  if (i >= period.size()) return 0;
-    return period[getIn(i)].high -
-    std::max(period[getIn(i)].open,
-    period[getIn(i)].close);
+  double c = period[getIn(i)].high -
+  std::max(period[getIn(i)].open,
+  period[getIn(i)].close);
+  
+  return c;
 }
-double Concepts::LowerShadow(size_t i) 
+
+long double Concepts::LowerShadow(size_t i) 
 { 
+  std::atomic<size_t> j{0};
+  size_t atual = j.load(std::memory_order_acquire);
+  if(i >= atual)
+    return 0.0;
+
   std::lock_guard<std::mutex> lock(mtx);
-  if (i >= period.size()) return 0;
-    return std::min(period[getIn(i)].open,
-    period[getIn(i)].close) -
-    period[getIn(i)].low;
+  double c = std::min(period[getIn(i)].open,
+  period[getIn(i)].close) -
+  period[getIn(i)].low;
+  
+  return c;
 }
 
-double Concepts::Volatility(size_t i)
+long double Concepts::Volatility(size_t i)
 {
+  std::atomic<size_t> j{0};
   std::lock_guard<std::mutex> lock(mtx);
 
-  size_t N = period.size();
+  size_t N = 
+  j.load(std::memory_order_acquire);
   if (N < i || i == 0)
     return 0.0;
     double sum = 0.0;
@@ -49,7 +76,7 @@ double Concepts::Volatility(size_t i)
     // últimos i candles
   for (size_t count = 0; count < i; count++)
   {
-    Candle& c = period[N - 1 - count];
+    Candle& c = period[getIn(N - 1 - count)];
     double body = std::abs(c.close - c.open);
     sum += body;
   }
@@ -59,7 +86,7 @@ double Concepts::Volatility(size_t i)
 
   for (size_t count = 0; count < i; count++)
   {
-    Candle& c = period[N - 1 - count];
+    Candle& c = period[getIn(N - 1 - count)];
     double body = std::abs(c.close - c.open);
     sq_sum += (body - mean) * (body - mean);
   }
@@ -67,12 +94,18 @@ double Concepts::Volatility(size_t i)
   return std::sqrt(sq_sum / i);
 }
 
-double Concepts::Return(size_t i)
+long double Concepts::Return(size_t i)
 {
+  std::atomic<size_t> j{0};
   std::lock_guard<std::mutex> lock(mtx);
+  size_t tamanho = 
+  j.load(std::memory_order_acquire);
   double data;
 
-  for(size_t x = period.size() - i; x < period.size(); x++)
+  if(tamanho <= i)
+    return 0.0;
+
+  for(size_t x = 0 - i; x < tamanho; x++)
   {
     data += std::abs(Net(x));
   }

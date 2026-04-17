@@ -1,48 +1,46 @@
 #include "httplib.h"
 #include "nlohmann/json.hpp"
-#include <vector>
 #include "CandleServer.h"
-#include <mutex>
+
+#include <atomic>
+#include <cstring>
+#include <iostream>
 #include <string>
 
 using json = nlohmann::json;
-std::vector<Candle> period;
+
+Candle period[1024];
 std::mutex mtx;
 
-void candleServer(int port)
+void candleServer(int port, std::atomic<size_t>* indice)
 {
-  httplib::Server servidor;
+    httplib::Server servidor;
 
-  servidor.Post("/candle", [](const
-  httplib::Request& requisicao, 
-  httplib::Response& resposta)
-  {
-    Candle c;
-    json b = json::parse(requisicao.body);
-    std::cout << "Post recebido\n";
-
-    c.symbol = b["symbol"].get<std::string>();
-    c.open = b["open"].get<double>();
-    c.high = b["high"].get<double>();
-    c.low = b["low"].get<double>();
-    c.close = b["close"].get<double>();
-
-    std::cout << "candle recebido:" << c.symbol 
-    << "," << c.open << "," << c.high << "," <<
-    c.low << "," << c.close << std::endl;     
+    servidor.Post("/candle",
+    [indice](const httplib::Request& requisicao,
+       httplib::Response& resposta)
     {
-      std::lock_guard<std::mutex> lock(mtx);
-      period.push_back(c);
-    }
+        Candle c;
 
-    {
-      std::lock_guard<std::mutex> lock(mtx);
-      if(period.size() >= 100)
-        period.clear();
-    }
-    
-    resposta.set_content("ok", "text/plain");
-  });
-  
-  servidor.listen("0.0.0.0",port);
+        json b = json::parse(requisicao.body);
+
+        std::string sym = b["symbol"];
+
+        strncpy(c.symbol, sym.c_str(), sizeof(c.symbol) - 1);
+        c.symbol[sizeof(c.symbol) - 1] = '\0';
+
+        c.open  = b["open"];
+        c.high  = b["high"];
+        c.low   = b["low"];
+        c.close = b["close"];
+
+        size_t i =
+            indice->fetch_add(1, std::memory_order_relaxed) & 1023;
+
+        period[i] = c;
+
+        resposta.set_content("ok", "text/plain");
+    });
+
+    servidor.listen("0.0.0.0", port);
 }

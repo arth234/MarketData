@@ -3,10 +3,11 @@
 #include <cstdint>
 #include <mutex>
 #include <string>
+#include <atomic>
 
 // Estrutura para armazenar os dados de um candle
 struct Candle {
-    std::string symbol;
+    char symbol[16];
     long double open;
     long double high;
     long double low;
@@ -14,8 +15,9 @@ struct Candle {
 };
 
 // Declarando variáveis globais para serem definidas em um .cpp
-extern std::vector<Candle> period;
+
 extern std::mutex mtx;
+extern Candle period[1024];
 
 // Função para iniciar o servidor
-void candleServer(int port);
+void candleServer(int port, std::atomic<size_t>* indice);

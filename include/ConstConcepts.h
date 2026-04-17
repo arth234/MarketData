@@ -11,11 +11,11 @@ public:
   explicit Concepts();
 
     // Funções de cálculo
-  double Body(size_t i);
-  double Net(size_t i);
-  double UpperShadow(size_t i);
-  double LowerShadow(size_t i);
-  double Volatility(size_t i);
-  double Return(size_t i);   
+  long double Body(size_t i);
+  long double Net(size_t i);
+  long double UpperShadow(size_t i);
+  long double LowerShadow(size_t i);
+  long double Volatility(size_t i);
+  long double Return(size_t i);   
 };
 
