@@ -1,219 +1,293 @@
-<div id="top">
+<h1 align="center">⚡ MarketData</h1>
 
-<!-- HEADER STYLE: CLASSIC -->
+<p align="center">
+High-Performance Market Data Ingestion Engine written in C++
+</p>
 
-<div align="center">
+<p align="center">
+Designed for <b>low latency</b>, <b>predictable memory usage</b> and
+<b>high-throughput real-time market data processing</b>.
+</p>
 
-<img src="readmeai/assets/logos/purple.svg" width="30%" style="position: relative; top: 0; right: 0;" alt="Project Logo"/>
+<hr>
 
-# MARKETDATA
+<h2>🚀 Overview</h2>
 
-<em>Lightweight C++ Market Data Ingestion Server for Real-Time OHLC Data</em>
+<p>
+<b>MarketData</b> is a lightweight C++ engine built to ingest and process
+real-time OHLC candle data with minimal latency.
+</p>
 
-<!-- BADGES -->
+<p>
+Unlike traditional data ingestion pipelines that rely on dynamic containers and
+heavy synchronization mechanisms, MarketData focuses on:
+</p>
 
-<img src="https://img.shields.io/github/license/arth234/MarketData?style=default&logo=opensourceinitiative&logoColor=white&color=0080ff" alt="license">
-<img src="https://img.shields.io/github/last-commit/arth234/MarketData?style=default&logo=git&logoColor=white&color=0080ff" alt="last-commit">
-<img src="https://img.shields.io/github/languages/top/arth234/MarketData?style=default&color=0080ff" alt="repo-top-language">
-<img src="https://img.shields.io/github/languages/count/arth234/MarketData?style=default&color=0080ff" alt="repo-language-count">
+<ul>
+<li>Deterministic memory usage</li>
+<li>Lock-free concurrency</li>
+<li>Cache-friendly data structures</li>
+<li>High-throughput ingestion pipelines</li>
+</ul>
 
-</div>
-<br>
+<p>
+The project is designed with the same architectural philosophy used in
+<strong>low-latency trading infrastructure</strong>.
+</p>
 
----
+<hr>
 
-## Table of Contents
+<h2>⚙ Core Architecture</h2>
 
-* [Overview](#overview)
-* [Features](#features)
-* [Project Structure](#project-structure)
-* [Getting Started](#getting-started)
-* [Roadmap](#roadmap)
-* [Contributing](#contributing)
-* [License](#license)
+<p>
+The system uses a <b>fixed-size ring buffer</b> for storing candle data.
+</p>
 
----
+<p>
+Instead of using dynamic containers like <code>std::vector</code>, the system
+relies on a preallocated circular structure with a maximum capacity of
+<b>1024 periods</b>.
+</p>
 
-## Overview
+<pre>
+Client
+   │
+HTTP POST (JSON candles)
+   │
+Socket Layer
+   │
+CandleServer
+   │
+Atomic synchronization
+   │
+Ring Buffer (1024 periods)
+   │
+Pattern / Index analysis
+</pre>
 
-**MarketData** is a lightweight **C++ HTTP server** designed to ingest **real-time OHLC candle data** from trading platforms such as MetaTrader.
+<p>
+This design ensures minimal memory allocations and predictable performance.
+</p>
 
-The system receives **HTTP POST requests containing JSON candle data**, parses the payload, and stores the information in memory for further processing.
+<hr>
 
-The project focuses on:
+<h2>⚡ Latest Performance Improvements</h2>
 
-* performance and low-latency networking
-* minimal dependencies
-* simple and modular architecture
-* real-time market data ingestion
+<h3>🔄 Ring Buffer Implementation</h3>
 
-Typical use cases include:
+<p>
+Previous versions relied on dynamic containers:
+</p>
 
-* algorithmic trading infrastructure
-* market data collection pipelines
-* quantitative research systems
-* real-time analytics platforms
+<pre><code>std::vector&lt;Candle&gt;</code></pre>
 
----
+<p>
+Problems with this approach:
+</p>
 
-## Features
+<ul>
+<li>Memory reallocations</li>
+<li>Cache inefficiencies</li>
+<li>Unpredictable latency spikes</li>
+</ul>
 
-| Feature                       | Description                                   |
-| ----------------------------- | --------------------------------------------- |
-| ⚡ Lightweight HTTP Server     | Implemented using native C++ sockets          |
-| 📈 Real-Time Candle Ingestion | Receives OHLC data via HTTP                   |
-| 🔒 Thread-Safe Storage        | Uses mutex synchronization                    |
-| 🧩 Modular Architecture       | Clear separation of networking and data logic |
-| 📦 Minimal Dependencies       | No heavy frameworks required                  |
-| 🛠 CMake Build System         | Portable build configuration                  |
+<p>
+The system now uses:
+</p>
 
----
+<pre>
+Fixed Ring Buffer
+Capacity: 1024 periods
+</pre>
 
-## Project Structure
+<p>
+Advantages:
+</p>
 
-```sh
-└── MarketData/
-    ├── CMakeLists.txt
-    ├── include
-    │   ├── CandleServer.h
-    │   ├── ConstConcepts.h
-    │   ├── Index.h
-    │   ├── Pattern.h
-    │   └── socket.h
-    └── src
-        ├── CandleServer.cpp
-        ├── ConstConcepts.cpp
-        ├── Index.cpp
-        └── main.cpp
-```
+<ul>
+<li>O(1) insertion</li>
+<li>No memory reallocations</li>
+<li>Constant memory footprint</li>
+<li>Better CPU cache locality</li>
+</ul>
 
-### Project Index
+<hr>
 
-<details open>
-<summary><b><code>MARKETDATA/</code></b></summary>
+<h3>⚛ Atomic Concurrency</h3>
 
-<details>
-<summary><b>__root__</b></summary>
+<p>
+The engine now leverages the <code>&lt;atomic&gt;</code> library from C++ for
+thread-safe operations without heavy locking mechanisms.
+</p>
 
-| File               | Description                                                           |
-| ------------------ | --------------------------------------------------------------------- |
-| **CMakeLists.txt** | Defines the build configuration and compilation settings using CMake. |
+<p>
+Atomic operations are used for:
+</p>
 
-</details>
+<ul>
+<li>Buffer indexing</li>
+<li>Thread synchronization</li>
+<li>Concurrent data access</li>
+</ul>
 
-<details>
-<summary><b>include</b></summary>
+<p>
+Benefits:
+</p>
 
-| File                | Description                                                          |
-| ------------------- | -------------------------------------------------------------------- |
-| **CandleServer.h**  | Interface for the candle ingestion server and request handling logic |
-| **ConstConcepts.h** | Compile-time constraints and constant utilities                      |
-| **Index.h**         | Indexing structures for market data organization                     |
-| **Pattern.h**       | Utility functions for pattern-related processing                     |
-| **socket.h**        | Minimal HTTP socket server implementation                            |
+<ul>
+<li>Reduced thread contention</li>
+<li>Higher ingestion throughput</li>
+<li>Lower synchronization overhead</li>
+</ul>
 
-</details>
+<hr>
 
-<details>
-<summary><b>src</b></summary>
+<h3>📦 Library Modularization</h3>
 
-| File                  | Description                                             |
-| --------------------- | ------------------------------------------------------- |
-| **CandleServer.cpp**  | Implementation of candle ingestion and request handling |
-| **ConstConcepts.cpp** | Implementation of compile-time and constant utilities   |
-| **Index.cpp**         | Indexing logic for market data access                   |
-| **main.cpp**          | Entry point that starts the HTTP server                 |
+<p>
+The project architecture was modularized to improve maintainability and
+reusability.
+</p>
 
-</details>
+<p>
+Core modules currently include:
+</p>
 
-</details>
+<pre>
+CandleServer
+Index
+Pattern
+ConstConcepts
+Socket utilities
+</pre>
 
----
+<p>
+Advantages:
+</p>
 
-## Getting Started
+<ul>
+<li>Cleaner project structure</li>
+<li>Easier testing</li>
+<li>Better extensibility</li>
+</ul>
 
-### Prerequisites
+<hr>
 
-This project requires:
+<h3>🗄 DuckDB Removal (Temporary)</h3>
 
-* **Programming Language:** C++17
-* **Build System:** CMake
-* **Operating System:** Linux or POSIX environment
+<p>
+The embedded <code>DuckDB.hpp</code> dependency was removed from the current
+version.
+</p>
 
-### Installation
+<p>
+The goal is to fork DuckDB and adapt it for a
+<b>multithreaded ingestion architecture</b> specifically optimized for this
+engine.
+</p>
 
-Clone the repository:
+<p>
+Future integration may include:
+</p>
 
-```sh
-git clone https://github.com/arth234/MarketData
+<ul>
+<li>Parallel query execution</li>
+<li>Optimized ingestion pipelines</li>
+<li>Tighter integration with MarketData's concurrency model</li>
+</ul>
+
+<hr>
+
+<h2>📊 Example Candle Payload</h2>
+
+<p>
+Example JSON request sent by a client:
+</p>
+
+<pre><code>{
+  "symbol": "EURUSD",
+  "open": 1.0845,
+  "high": 1.0852,
+  "low": 1.0838,
+  "close": 1.0849,
+  "volume": 1200
+}
+</code></pre>
+
+<hr>
+
+<h2>🛠 Build Instructions</h2>
+
+<h3>Requirements</h3>
+
+<ul>
+<li>C++17 or newer</li>
+<li>CMake</li>
+<li>Linux / POSIX environment</li>
+</ul>
+
+<h3>Build</h3>
+
+<pre><code>git clone https://github.com/arth234/MarketData
+
 cd MarketData
-```
 
-Build the project:
-
-```sh
 mkdir build
 cd build
 
 cmake ..
 make
-```
+</code></pre>
 
-### Usage
+<h3>Run</h3>
 
-Run the server:
+<pre><code>./MarketData</code></pre>
 
-```sh
-./MarketData
-```
+<hr>
 
-Expected output
+<h2>📈 Future Development</h2>
 
-```
-Server running on 5000
-```
+<p>
+Planned improvements include:
+</p>
 
-### Testing
+<ul>
+<li>Lock-free multi-producer ingestion</li>
+<li>Custom memory allocators</li>
+<li>SIMD optimizations</li>
+<li>Multithreaded database integration</li>
+<li>Real-time analytics modules</li>
+</ul>
 
-You can test the API using curl:
+<p>
+The long-term goal is to evolve MarketData into a
+<strong>high-performance market data engine for quantitative trading
+systems</strong>.
+</p>
 
-```sh
-curl -X POST http://127.0.0.1:5000/ohlc \
--H "Content-Type: application/json" \
--d '{"symbol":"EURUSD","open":1.08,"high":1.09,"low":1.07,"close":1.085}'
-```
+<hr>
 
----
+<h2>👨‍💻 Author</h2>
 
-## Roadmap
+<p>
+Arthur Vieira
+</p>
 
-* [x] HTTP candle ingestion server
-* [x] JSON request parsing
-* [x] Thread-safe candle storage
-* [ ] Persistent database storage
-* [ ] WebSocket streaming
-* [ ] Historical candle API
-* [ ] Performance benchmarking
+<p>
+Interests:
+</p>
 
----
+<ul>
+<li>Low-latency systems</li>
+<li>High-performance C++</li>
+<li>Trading infrastructure</li>
+<li>Real-time data pipelines</li>
+</ul>
 
-## Contributing
+<hr>
 
-* **💬 Discussions:** https://github.com/arth234/MarketData/discussions
-* **🐛 Issues:** https://github.com/arth234/MarketData/issues
+<h2>📜 License</h2>
 
-Pull requests are welcome.
-
----
-
-## License
-
-Distributed under the **MIT License**.
-
----
-
-<div align="right">
-
-<a href="#top">⬆ Back to top</a>
-
-</div>
+<p>
+MIT License
+</p>
